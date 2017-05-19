@@ -71,10 +71,15 @@ names(best_enc) <- 1L:6
   
 \begin{frame}{} 
 
+Curli fibers:
+\begin{itemize}
+\item involved in adhesion to surfaces, cell aggregation, and biofilm formation.
+\item formed by highly aggregative structural subunits, e.g, curlin (CsgA).
+\end{itemize}
 \end{frame}   
   
 \begin{frame}{}
-CsgA fibre formation.
+CsgA fibre formation through self-assembly (amyloidogenic aggregation).
 \begin{figure} 
 \includegraphics[width=0.95\textwidth]{static_figure/csga_csgc1.jpg}
 \end{figure}
@@ -83,7 +88,7 @@ CsgA fibre formation.
 \end{frame}  
   
 \begin{frame}{}
-    Proteins associated with various neurodegenerative disorders (e.g., Alzheimer's, Parkinson's, Creutzfeldta-Jakob's diseases) creating harmful aggregates.
+A similar aggregation mechanism is demonstrated by proteins associated with various neurodegenerative disorders (e.g., Alzheimer's, Parkinson's, Creutzfeldta-Jakob's diseases).
     
 \begin{figure} 
 \includegraphics[width=0.7\textwidth]{static_figure/amyloid_aggregates.jpg}
@@ -109,7 +114,7 @@ $\beta$-amyloid aggregates (red) around neurons (green). Strittmatter Laboratory
   
 
 \begin{frame}{}
-CsgC was reported to effectively inhibit CsgA aggregation. \textit{In vivo}, it prevents CsgA from aggregating within the periplasm~\citep{evans_bacterial_2015}.
+CsgC was reported to effectively (molar ratios as low as 1:500) inhibit CsgA aggregation. \textit{In vivo}, it prevents CsgA from aggregating within the periplasm~\citep{evans_bacterial_2015}.
 
 \end{frame}  
 
@@ -129,6 +134,8 @@ A. CsgA fibre formation. B. CsgA+CsgC 200:1 (molar ratio) fibre formation.
 
 \begin{frame}
   Which motifs (countinous or gapped subsequences of amino acids) are associated with amyloidogenicity?
+  
+Can we build a predictor of amyloidogenicity using these motifs?
   \end{frame}
 
 
@@ -140,7 +147,7 @@ A. CsgA fibre formation. B. CsgA+CsgC 200:1 (molar ratio) fibre formation.
   
 \begin{frame}{QuiPT}  
   
-  \textbf{Qui}ck \textbf{P}ermutation \textbf{T}est is a fast alternative to permutation tests for n-gram data. It also allows precise estimation of p-value.
+  \textbf{Qui}ck \textbf{P}ermutation \textbf{T}est is a fast alternative to permutation tests for motifs. It also allows precise estimation of p-value.
 
 QuiPT is avaible as part of the \textbf{biogram} R package.
 \end{frame}
@@ -165,6 +172,10 @@ ggplot(subdat, aes(x = len_range, y = AUC_mean)) +
   coord_flip()
 
 @
+
+Area Under the Curve (AUC): a performance measure between 0 (completely wrong predictions) and 1 (completely right predictions).
+
+
 \end{frame}
 
 \section{Reduced amino acid alphabets}
@@ -456,6 +467,66 @@ AmyloGram & \textbf{0.8972} & \textbf{0.6307} \\
 The predictor based on the best-performing alphabet, called AmyloGram, was benchmarked against the most popular tools for the detection of amyloid peptides using an external data set \textit{pep424}.
 
 \end{frame}
+
+\begin{frame}{Experimental verification}
+
+We verified experimentally with Fourier transform infrared spectroscopy (FTIR) \textbf{8} non-amyloidogenic peptides from the AmyLoad database that AmyloGram assessed with a high probability of amyloidogenicity.
+
+<<echo = FALSE,message=FALSE,fig.align='center',fig.width=14,fig.height=6.4,warning=FALSE>>=
+ftir_res <- read.csv("ftir_amylogram_pasta2_literature.csv")
+
+ftir_res_agg <- ftir_res %>% 
+  group_by(amyl_db, amyl_ftir) %>% 
+  summarise(count = n()) %>% 
+  ungroup() %>% 
+  mutate(amyl_db = factor(amyl_db, labels = c("Non-amyloid", "Amyloid")),
+         amyl_ftir = factor(amyl_ftir, labels = c("Non-amyloid", "Amyloid"))) %>% 
+  filter(amyl_db == "Non-amyloid",
+         !is.na(amyl_ftir)) %>% 
+  mutate(count = ifelse(count == 7, 4, count)) %>% 
+  rbind(data.frame(amyl_db = "Non-amyloid", amyl_ftir = "Amyloid", count = 3)) %>% 
+  mutate(frac = count/sum(count),
+         count_nice = ifelse(count > 2, paste0(count, " peptides"), paste0(count, " peptide")),
+         amyl_db = factor(c("Non-amyloid (database)", 
+                            "Non-amyloid (database)", 
+                            "Amyloid (literature)")))
+
+ggplot(ftir_res_agg, aes(x = amyl_ftir, y = frac, fill = amyl_db,
+                         label = count_nice)) +
+  geom_bar(stat = "identity") +
+  geom_text(position = position_stack(vjust=0.5), color = "white", size = 7) +
+  scale_y_continuous("Fraction of peptides") +
+  scale_x_discrete("FTIR result") +
+  scale_fill_manual("Database and literature", values = c("darkred", "navyblue"),
+                    na.value = "gray47") +
+  my_theme
+@
+
+\end{frame}
+
+
+\begin{frame}{CsgA in AmyloGram}
+
+CsgA protein (E. coli K12)
+<<echo = FALSE,message=FALSE,fig.align='center',fig.width=14,fig.height=6.4,warning=FALSE>>=
+library(biogram)
+library(AmyloGram)
+tmp <- "MKLLKVAAIAAIVFSGSALAGVVPQYGGGGNHGGGGNNSGPNSELNIYQYGGGNSALALQTDARNSDLTITQHGGGNGADVGQGSDDSSIDLTQRGFGNSATLDQWNGKNSEMTVKQFGGGNGAAVDQTASNSSVNVTQVGFGNNATAHQY"
+ngrams <- seq2ngrams(strsplit(tmp, "")[[1]], 6, u = seqinr::a()[-1]) %>% 
+  decode_ngrams() %>% 
+  strsplit("")
+res <- predict(AmyloGram_model, ngrams)[["Probability"]]
+
+data.frame(Position = 1L:length(res), prob = res) %>% 
+  ggplot(aes(x = Position, y = prob)) +
+  geom_line() +
+  scale_y_continuous("AmyloGram prediction") +
+  geom_hline(yintercept = 0.5, color = "red") +
+  my_theme
+
+@
+\end{frame}
+
 
 \begin{frame}{Summary}
 
