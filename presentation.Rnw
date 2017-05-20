@@ -173,6 +173,8 @@ ggplot(subdat, aes(x = len_range, y = AUC_mean)) +
 
 @
 
+Full alphabet: 20 standard amino acids.
+
 Area Under the Curve (AUC): a performance measure between 0 (completely wrong predictions) and 1 (completely right predictions).
 
 
