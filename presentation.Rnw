@@ -10,6 +10,8 @@
 \usepackage{colortbl, xcolor}
 
 
+\newcommand\Fontvi{\fontsize{6}{7.2}\selectfont}
+
 \title{Modelling amyloidogenic scaffolds of biofilms}
 \date{}
 \author{Micha\l{} Burdukiewicz}
@@ -292,6 +294,14 @@ ggplot(subdat, aes(x = len_range, y = AUC_mean)) +
 
 \end{frame}
 
+
+\section{Knowledge-discovery}
+
+\begin{frame}{}
+Are groups of amino acids in the best performing reduced alphabet related to amyloidogenicity?
+\end{frame}
+
+
 \begin{frame}{The best-perfoming reduced alphabet}
    <<echo = FALSE, message=FALSE,warning=FALSE,fig.align='center',fig.width=14,fig.height=7>>=
 # cat(group2df(best_enc, caption = "The best-performing reduced alphabet."))
@@ -405,15 +415,19 @@ print(simil_plot)
 The correlation between mean AUC an similarity index is significant ($\textrm{p-value} \leq 2.2^{-16}$; $\rho = 0.51$).
 \end{frame}
 
-\section{Knowledge-discovery}
 
 \begin{frame}{}
-Are informative n-grams found by QuiPT associated with amyloidogenicity?
+Are informative motifs (n-grams) found by QuiPT associated with amyloidogenicity?
 \end{frame}
 
 
-\begin{frame}{Informative n-grams}
-<<echo = FALSE,message=FALSE,fig.align='center',fig.width=14,fig.height=6,warning=FALSE>>=
+\begin{frame}
+
+Out of 65 the most informative n-grams, 15 (23\%) were also found in the motifs validated experimentally~\citep{lopez_de_la_paz_novo_2002}.
+
+Non-amyloidogenic motifs: 
+
+<<echo = FALSE,message=FALSE,results='asis'>>=
 ngram_freq <- read.csv("ngram_freq.csv")
 
 ngram_freq_plot <- mutate(ngram_freq, decoded_name = gsub("_", "-", decoded_name)) %>%
@@ -425,20 +439,56 @@ ngram_freq_plot <- mutate(ngram_freq, decoded_name = gsub("_", "-", decoded_name
   droplevels %>%
   mutate(variable = factor(variable, labels = c("Amyloid", "Non-amyloid")))
 
-ggplot(ngram_freq_plot, aes(x = decoded_name, y = value)) +
-  geom_bar(aes(fill = variable), position = "dodge", stat = "identity") +
-  geom_point(data = group_by(ngram_freq_plot, decoded_name)  %>% filter(value == max(value)),
-             aes(y = value + 0.004, shape = association), size = 6) +
-  scale_fill_manual("", values = c("gold", "darkmagenta")) +
-  scale_shape_manual("Motif:", breaks = c("Amyloidogenic", "Non-amyloidogenic"), values = c(16, 17, NA)) +
-  scale_y_continuous("Frequency") +
-  scale_x_discrete("") +
-  my_theme +
-  theme(panel.grid.major.y = element_line(color = "lightgrey", size = 0.5)) 
+ngram_freq_text <- select(ngram_freq_plot, decoded_name, association) %>% 
+  filter(!duplicated(.))
 
+nice_groups <- sapply(AmyloGram::AmyloGram_model[["enc"]], function(i)
+  paste0("\\{\\\\{", paste0(toupper(i), collapse = ", "), "\\\\}\\}")
+)
+
+nice_groups <- paste0(paste0("\\\\textcolor{", 
+                             c("black", "red", "blue", "black", "purple", "violet"), "}"), 
+                      nice_groups)
+
+names(nice_groups) <- 1L:6
+
+readable_ngrams <- gsub("--", "-{}-", gsub("--", "-{}-", as.character(ngram_freq_text[["decoded_name"]])))
+
+for(i in 1L:length(nice_groups)) {
+  readable_ngrams <- gsub(pattern = names(nice_groups)[i], 
+                          replacement = nice_groups[i], 
+                          x = readable_ngrams)
+}
+
+# ggplot(ngram_freq_plot, aes(x = decoded_name, y = value)) +
+#   geom_bar(aes(fill = variable), position = "dodge", stat = "identity") +
+#   geom_point(data = group_by(ngram_freq_plot, decoded_name)  %>% filter(value == max(value)),
+#              aes(y = value + 0.004, shape = association), size = 6) +
+#   scale_fill_manual("", values = c("gold", "darkmagenta")) +
+#   scale_shape_manual("Motif:", breaks = c("Amyloidogenic", "Non-amyloidogenic"), values = c(16, 17, NA)) +
+#   scale_y_continuous("Frequency") +
+#   scale_x_discrete("") +
+#   my_theme +
+#   theme(panel.grid.major.y = element_line(color = "lightgrey", size = 0.5)) 
+
+cat(readable_ngrams[ngram_freq_text[["association"]] == "Non-amyloidogenic"],
+    sep = "\n\n")
 @
 
-Out of 65 the most informative n-grams, 15 (23\%) were also found in the motifs validated experimentally~\citep{lopez_de_la_paz_novo_2002}.
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+
+Amyloidogenic motifs: 
+
+\Fontvi
+<<echo = FALSE,message=FALSE,results='asis'>>=
+cat(readable_ngrams[ngram_freq_text[["association"]] != "Non-amyloidogenic"],
+    sep = "\n\n")
+@
+
+
 \end{frame}
 
 
@@ -509,22 +559,35 @@ ggplot(ftir_res_agg, aes(x = amyl_ftir, y = frac, fill = amyl_db,
 
 \begin{frame}{CsgA in AmyloGram}
 
-CsgA protein (E. coli K12)
+CsgA protein (E. coli K12):
+
+
 <<echo = FALSE,message=FALSE,fig.align='center',fig.width=14,fig.height=6.4,warning=FALSE>>=
 library(biogram)
 library(AmyloGram)
-tmp <- "MKLLKVAAIAAIVFSGSALAGVVPQYGGGGNHGGGGNNSGPNSELNIYQYGGGNSALALQTDARNSDLTITQHGGGNGADVGQGSDDSSIDLTQRGFGNSATLDQWNGKNSEMTVKQFGGGNGAAVDQTASNSSVNVTQVGFGNNATAHQY"
-ngrams <- seq2ngrams(strsplit(tmp, "")[[1]], 6, u = seqinr::a()[-1]) %>% 
-  decode_ngrams() %>% 
-  strsplit("")
-res <- predict(AmyloGram_model, ngrams)[["Probability"]]
+tmp <- strsplit("MKLLKVAAIAAIVFSGSALAGVVPQYGGGGNHGGGGNNSGPNSELNIYQYGGGNSALALQTDARNSDLTITQHGGGNGADVGQGSDDSSIDLTQRGFGNSATLDQWNGKNSEMTVKQFGGGNGAAVDQTASNSSVNVTQVGFGNNATAHQY", "")[[1]]
 
-data.frame(Position = 1L:length(res), prob = res) %>% 
-  ggplot(aes(x = Position, y = prob)) +
-  geom_line() +
-  scale_y_continuous("AmyloGram prediction") +
-  geom_hline(yintercept = 0.5, color = "red") +
-  my_theme
+
+# ngrams <- seq2ngrams(tmp, 6, u = seqinr::a()[-1]) %>% 
+#   decode_ngrams() %>% 
+#   strsplit("")
+# res <- predict(AmyloGram_model, ngrams)[["Probability"]]
+# 
+# pos_matrix <- do.call(cbind, get_ngrams_ind(nchar(tmp), 6, 0))
+# 
+# res_single_residue <- sapply(unique(as.vector(pos_matrix)), function(i)
+#   max(res[which(i == pos_matrix, arr.ind = TRUE)[, "row"]])
+# )
+
+
+predict(AmyloGram_model, list(R1 = tmp[43L:65], 
+                              R2 = tmp[66L:87],
+                              R3 = tmp[88L:110],
+                              R4 = tmp[111L:132],
+                              R5 = tmp[133L:151])) %>% 
+  data.frame() %>% 
+  mutate(Amyloidogenic = c("Yes", "No", "Yes", "No", "Yes")) %>% 
+  knitr::kable(format = "latex")
 
 @
 \end{frame}
@@ -562,7 +625,7 @@ This research was partially funded by the KNOW Consortium and National Science C
 \item \textbf{AmyLoad} database (\url{comprec-lin.iiar.pwr.edu.pl/amyload}):
 \begin{itemize}
 \small
-\item Paweł Woźniak.
+\item Pawe\l{} Wo\'{z}niak.
 \end{itemize}
 \end{itemize}
 }
