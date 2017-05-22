@@ -68,8 +68,8 @@ names(best_enc) <- 1L:6
 @
   
 
-  \maketitle
-  \section{The role of amyloids in biofilm formation}
+\maketitle
+\section{The role of amyloids in biofilm formation}
   
 \begin{frame}{} 
 
@@ -81,12 +81,13 @@ Curli fibers:
 \end{frame}   
   
 \begin{frame}{}
-CsgA fibre formation through self-assembly (amyloidogenic aggregation).
+CsgA fibre formation through self-assembly (amyloidogenic aggregation). Three out of five very similar regions (R1, R3 and R5) are able to aggregate on their own.
 \begin{figure} 
 \includegraphics[width=0.95\textwidth]{static_figure/csga_csgc1.jpg}
 \end{figure}
 
 \footnotesize Scale bar $= 200$nm. \citet{taylor_electrostatically-guided_2016}.
+
 \end{frame}  
   
 \begin{frame}{}
@@ -103,7 +104,7 @@ $\beta$-amyloid aggregates (red) around neurons (green). Strittmatter Laboratory
   
 
   
-  \begin{frame}{}
+\begin{frame}{}
   
   The aggregation of amyloids is initiated by 6- to 15-residue segments called hot spots, diverse subsequences that form unique zipper-like $\beta$-structures.
 \begin{figure} 
@@ -149,9 +150,9 @@ Can we build a predictor of amyloidogenicity using these motifs?
   
 \begin{frame}{QuiPT}  
   
-  \textbf{Qui}ck \textbf{P}ermutation \textbf{T}est is a fast alternative to permutation tests for motifs. It also allows precise estimation of p-value.
+  \textbf{Qui}ck \textbf{P}ermutation \textbf{T}est is a fast alternative to permutation tests for motifs. It also allows more precise estimation of p-value.
 
-QuiPT is avaible as part of the \textbf{biogram} R package.
+QuiPT is avaible as a part of the \textbf{biogram} R package.
 \end{frame}
   
 
@@ -175,33 +176,31 @@ ggplot(subdat, aes(x = len_range, y = AUC_mean)) +
 
 @
 
-Full alphabet: 20 standard amino acids.
+\small 
+
+Full alphabet: 20 standard amino acids (A, C, D, E, F, G, H, I, K, L, M, N, P, Q, R, S, T, V, W, Y).
 
 Area Under the Curve (AUC): a performance measure between 0 (completely wrong predictions) and 1 (completely right predictions).
-
-
 \end{frame}
 
 \section{Reduced amino acid alphabets}
   
 \begin{frame}
-  Does amyloidogenicity depend on the exact sequence of amino acids?
-  \end{frame}
+Does amyloidogenicity depend on the exact sequence of amino acids?
+\end{frame}
 
 \begin{frame}{Standard reduced amino acid alphabets}
 To date, several reduced amino acid alphabets have been proposed, which have been applied to (among others) protein folding and protein structure prediction~\citep{kosiol_new_2004, melo_accuracy_2006}.
-  \end{frame}
+\end{frame}
   
-    \begin{frame}{Standard reduced amino acid alphabets}
+\begin{frame}{Standard reduced amino acid alphabets}
 \begin{figure} 
 \includegraphics[width=0.95\textwidth]{static_figure/ngram2.eps}
 \end{figure}
+\end{frame}
 
 
-  \end{frame}
-
-
-    \begin{frame}{Cross-validation}
+\begin{frame}{Cross-validation}
   <<echo = FALSE, message=FALSE,warning=FALSE,fig.align='center',fig.width=14,fig.height=7>>=
 ggplot(subdat, aes(x = len_range, y = AUC_mean)) +
   geom_boxplot(outlier.color = NA, outlier.shape = 16, outlier.size = 5, color = NA, fill = NA) +
@@ -221,7 +220,7 @@ ggplot(subdat, aes(x = len_range, y = AUC_mean)) +
 
 Standard reduced amino acid alphabets do not enhance discrimination between amyloidogenic and non-amyloidogenic proteins.
   
-  \end{frame}
+\end{frame}
 
 
 \begin{frame}{Novel reduced amino acid alphabets}
@@ -271,10 +270,10 @@ Hinges of boxes correspond to
 the 0.25 and 0.75 quartiles. The bar inside the box represents the median. The 
 gray circles correspond to the reduced alphabets with the AUC outside the 0.95 
 confidence interval.
-  \end{frame}
+\end{frame}
 
 
-    \begin{frame}{The best-perfoming reduced alphabet}
+\begin{frame}{The best-perfoming reduced alphabet}
   <<echo = FALSE, message=FALSE,warning=FALSE,fig.align='center',fig.width=14,fig.height=7>>=
 
 ggplot(subdat, aes(x = len_range, y = AUC_mean)) +
@@ -586,7 +585,7 @@ predict(AmyloGram_model, list(R1 = tmp[43L:65],
                               R4 = tmp[111L:132],
                               R5 = tmp[133L:151])) %>% 
   data.frame() %>% 
-  mutate(Amyloidogenic = c("Yes", "No", "Yes", "No", "Yes")) %>% 
+  mutate(`Amyloidogenic (experimental)` = c("Yes", "No", "Yes", "No", "Yes")) %>% 
   knitr::kable(format = "latex")
 
 @
