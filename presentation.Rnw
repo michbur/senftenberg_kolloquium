@@ -81,7 +81,7 @@ Curli fibers:
 \end{frame}   
   
 \begin{frame}{}
-CsgA fibre formation through self-assembly (amyloidogenic aggregation). Three out of five very similar regions of CsgA (R1, R3 and R5) are able to aggregate on their own.
+CsgA fibres form through self-assembly (amyloidogenic aggregation). 
 \begin{figure} 
 \includegraphics[width=0.95\textwidth]{static_figure/csga_csgc1.jpg}
 \end{figure}
@@ -90,6 +90,28 @@ CsgA fibre formation through self-assembly (amyloidogenic aggregation). Three ou
 
 \end{frame}  
   
+\begin{frame}{}  
+Three out of five very similar regions of CsgA (R1, R3 and R5) are able to aggregate on their own.  
+
+CsgA protein (E. coli K12):
+
+\texttt{43-\textcolor{red}{SELNIYQYGGGNSALALQTDARN}-}
+
+\texttt{  -SDLTITQHGGGNGADVGQGSDD-}
+
+\texttt{  -\textcolor{red}{SSIDLTQRGFGNSATLDQWNGKN}-}
+
+\texttt{  -SEMTVKQFGGGNGAAVDQTASN-}
+
+\texttt{  -\textcolor{red}{SSVNVTQVGFGNNATAHQY}}
+
+
+
+
+\end{frame}
+  
+
+
 \begin{frame}{}
 A similar aggregation mechanism is demonstrated by proteins associated with various neurodegenerative disorders (e.g., Alzheimer's, Parkinson's, Creutzfeldta-Jakob's diseases).
     
