@@ -119,7 +119,7 @@ $\beta$-amyloid aggregates (red) around neurons (green). Strittmatter Laboratory
 \section{Amyloidogenic motifs}
 
 \begin{frame}
-  Which motifs (countinous or gapped subsequences of amino acids) are associated with amyloidogenicity?
+  Which motifs (n-grams, countinous or gapped subsequences of amino acids) are associated with amyloidogenicity?
   
 Can we build a predictor of amyloidogenicity using these motifs?
   \end{frame}
@@ -580,7 +580,7 @@ predict(AmyloGram_model, list(R1 = tmp[43L:65],
 
 We identified a group of reduced amino acid alphabets which capture general properties of amyloids. 
 
-Our algorithm was also capable of extracting n-gram associated with amyloidogenicity, partially confirming experimental results.
+Our algorithm was also capable of extracting motifs (n-grams) associated with amyloidogenicity, partially confirming experimental results.
 
 Our software is available as a web-server: \url{smorfland.uni.wroc.pl/amylogram}.
 
