@@ -81,7 +81,7 @@ Curli fibers:
 \end{frame}   
   
 \begin{frame}{}
-CsgA fibre formation through self-assembly (amyloidogenic aggregation). Three out of five very similar regions (R1, R3 and R5) are able to aggregate on their own.
+CsgA fibre formation through self-assembly (amyloidogenic aggregation). Three out of five very similar regions of CsgA (R1, R3 and R5) are able to aggregate on their own.
 \begin{figure} 
 \includegraphics[width=0.95\textwidth]{static_figure/csga_csgc1.jpg}
 \end{figure}
@@ -115,23 +115,6 @@ $\beta$-amyloid aggregates (red) around neurons (green). Strittmatter Laboratory
 \end{frame}
   
   
-
-\begin{frame}{}
-CsgC was reported to effectively (molar ratios as low as 1:500) inhibit CsgA aggregation. \textit{In vivo}, it prevents CsgA from aggregating within the periplasm~\citep{evans_bacterial_2015}.
-
-\end{frame}  
-
-\begin{frame}{}
-
-
-\begin{figure} 
-\includegraphics[width=0.95\textwidth]{static_figure/csga_csgc2.jpg}
-\end{figure}
-
-A. CsgA fibre formation. B. CsgA+CsgC 200:1 (molar ratio) fibre formation.
-
-\footnotesize Scale bar $= 200$nm. \citet{taylor_electrostatically-guided_2016}.
-\end{frame}
 
 \section{Amyloidogenic motifs}
 
@@ -585,7 +568,8 @@ predict(AmyloGram_model, list(R1 = tmp[43L:65],
                               R4 = tmp[111L:132],
                               R5 = tmp[133L:151])) %>% 
   data.frame() %>% 
-  mutate(`Amyloidogenic (experimental)` = c("Yes", "No", "Yes", "No", "Yes")) %>% 
+  mutate(`Amyloidogenic (experimental)` = c("Yes", "No", "Yes", "No", "Yes"),
+         Probability = round(Probability, 4)) %>% 
   knitr::kable(format = "latex")
 
 @
@@ -594,7 +578,7 @@ predict(AmyloGram_model, list(R1 = tmp[43L:65],
 
 \begin{frame}{Summary}
 
-We identified a group of reduced amino acid alphabets which capture properties of amyloids. 
+We identified a group of reduced amino acid alphabets which capture general properties of amyloids. 
 
 Our algorithm was also capable of extracting n-gram associated with amyloidogenicity, partially confirming experimental results.
 
@@ -603,6 +587,24 @@ Our software is available as a web-server: \url{smorfland.uni.wroc.pl/amylogram}
 n-gram analysis workflow is implemented in the R package \textbf{biogram}: \url{https://cran.r-project.org/package=biogram}.
 
 \end{frame}
+
+\begin{frame}{Perspectives}
+CsgC was reported to effectively (molar ratios as low as 1:500) inhibit CsgA aggregation. \textit{In vivo}, it prevents CsgA from aggregating within the periplasm~\citep{evans_bacterial_2015}.
+
+CsgC blocks with specificity hot-spots similar to amyloidogenic regions of CsgA (e.g., in $\alpha$-synnuclein, a protein associated with Parkinson disease).
+
+\end{frame}  
+
+\begin{frame}{Perspectives}
+\begin{figure} 
+\includegraphics[width=0.95\textwidth]{static_figure/csga_csgc2.jpg}
+\end{figure}
+
+A. CsgA fibre formation. B. CsgA+CsgC 200:1 (molar ratio) fibre formation.
+
+\footnotesize Scale bar $= 200$nm. \citet{taylor_electrostatically-guided_2016}.
+\end{frame}
+
 
 \begin{frame}{Acknowledgements and funding}
 
